@@ -13,8 +13,8 @@ import pancake.explosives.ExplosivesEnhanced;
 * Initialize it in class ModItems as an Item
 * Add it to inventory group
 * Add texture
-* Add model json file
-* Add item name translation in en_us.
+* Add model json file - name should be same as item name
+* Add item name translation in en_us.json
 * */
 
 public class ModItems {
