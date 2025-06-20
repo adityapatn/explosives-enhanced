@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "explosives-enhanced",
+	"version": "${version}",
+	"name": "explosives-enhanced",
+	"description": "A mod adding new explosives to the game to make combat more interesting!",
+	"authors": [
+		"Pancake"
+	],
+	"contact": {
+		"homepage": "https://github.com/adityapatn",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "MIT",
+	"icon": "assets/explosives-enhanced/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"pancake.explosives.ExplosivesEnhanced"
+		],
+		"fabric-datagen": [
+			"pancake.explosives.ExplosivesEnhancedDataGenerator"
+		],
+		"client": [
+			"pancake.explosives.ExplosivesClient"
+		]
+	},
+	"mixins": [
+		"explosives-enhanced.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.14",
+		"minecraft": "~1.21",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
