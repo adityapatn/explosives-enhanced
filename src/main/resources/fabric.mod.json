@@ -2,14 +2,14 @@
 	"schemaVersion": 1,
 	"id": "explosives-enhanced",
 	"version": "${version}",
-	"name": "explosives-enhanced",
+	"name": "Explosives Enhanced",
 	"description": "A mod adding new explosives to the game to make combat more interesting!",
 	"authors": [
 		"Pancake"
 	],
 	"contact": {
 		"homepage": "https://github.com/adityapatn",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/adityapatn/explosives-enhanced"
 	},
 	"license": "MIT",
 	"icon": "assets/explosives-enhanced/icon.png",
