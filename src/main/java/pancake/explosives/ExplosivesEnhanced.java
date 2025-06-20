@@ -4,6 +4,7 @@ import net.fabricmc.api.ModInitializer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pancake.explosives.item.ModItems;
 
 public class ExplosivesEnhanced implements ModInitializer {
 	public static final String MOD_ID = "explosives-enhanced";
@@ -17,8 +18,10 @@ public class ExplosivesEnhanced implements ModInitializer {
 	public void onInitialize() {
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
 		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution.
+		// Proceed with mild caution
 
 		LOGGER.info("It works?");
+
+		ModItems.registerModItems();
 	}
 }
