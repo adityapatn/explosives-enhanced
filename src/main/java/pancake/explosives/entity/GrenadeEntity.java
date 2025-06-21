@@ -40,10 +40,11 @@ public class GrenadeEntity extends ThrownItemEntity {
 
         if (!this.getWorld().isClient()) {
 
-            float power = 3.0F;
-            this.getWorld().createExplosion(this, getX(), getY(), getZ(), power, false, World.ExplosionSourceType.TNT);
+            float explosionPower = 2.0F;
+            this.getWorld().createExplosion(this, getX(), getY(), getZ(), explosionPower, false, World.ExplosionSourceType.TNT);
 
             //damaging the owner (not included in explosion damage)
+            float damagePower = 4.0F;
             Entity owner = this.getOwner();
             if (owner instanceof LivingEntity livingOwner) {
                 ExplosivesEnhanced.LOGGER.info("Damaging owner!");
@@ -52,13 +53,13 @@ public class GrenadeEntity extends ThrownItemEntity {
                 double dz = livingOwner.getZ() - getZ();
                 double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
-                float radius = power * 2.0f;
+                float radius = damagePower * 2.0f;
                 if (distance <= radius) {
                     float exposure = Explosion.getExposure(getPos(), livingOwner);
                     if (exposure > 0) {
                         double normDist = distance / radius;
                         double impact = (1.0 - normDist) * exposure;
-                        float damage = (float)((impact * impact + impact) / 2.0 * 7.0 * power + 1.0);
+                        float damage = (float)((impact * impact + impact) * 3.5 * damagePower);
 
                         livingOwner.damage(grenadeDamageSource, damage); //damage source must not be explosion to affect owner
                         ExplosivesEnhanced.LOGGER.info("Owner damaged for " + damage + " hearts.");
