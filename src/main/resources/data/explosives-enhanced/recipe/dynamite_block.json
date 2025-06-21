@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "T": {
+      "item": "minecraft:tnt"
+    },
+    "G": {
+      "item": "minecraft:gunpowder"
+    }
+  },
+  "pattern": [
+    " G ",
+    " T ",
+    " G "
+  ],
+  "result": {
+    "count": 1,
+    "id": "explosives-enhanced:dynamite_block"
+  }
+}
