@@ -20,7 +20,7 @@ import pancake.explosives.ExplosivesEnhanced;
 
 public class ModItems {
 
-    public static final Item GrenadeItem = registerItem("grenade_item", new Item(new Item.Settings()));
+    public static final Item GrenadeItem = registerItem("grenade_item", new GrenadeItem(new Item.Settings()));
 
     private static Item registerItem(String name, Item item) {
         return Registry.register(Registries.ITEM, Identifier.of(ExplosivesEnhanced.MOD_ID, name), item);

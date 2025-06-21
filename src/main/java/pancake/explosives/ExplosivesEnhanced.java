@@ -5,6 +5,7 @@ import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pancake.explosives.block.ModBlocks;
+import pancake.explosives.entity.ModEntities;
 import pancake.explosives.item.ModItemGroups;
 import pancake.explosives.item.ModItems;
 
@@ -27,5 +28,6 @@ public class ExplosivesEnhanced implements ModInitializer {
 		ModItemGroups.registerItemGroups();
 		ModItems.registerModItems();
 		ModBlocks.registerModBlocks();
+		ModEntities.registerModEntities();
 	}
 }
