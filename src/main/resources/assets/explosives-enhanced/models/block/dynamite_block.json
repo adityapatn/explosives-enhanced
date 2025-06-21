@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "explosives-enhanced:block/dynamite_bottom",
+    "side": "explosives-enhanced:block/dynamite_side",
+    "top": "explosives-enhanced:block/dynamite_top"
+  }
+}
