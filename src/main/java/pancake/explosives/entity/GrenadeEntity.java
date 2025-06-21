@@ -6,10 +6,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.explosion.ExplosionBehavior;
-import pancake.explosives.ExplosivesEnhanced;
 import pancake.explosives.item.ModItems;
 import net.minecraft.world.explosion.Explosion;
 
@@ -36,9 +33,10 @@ public class GrenadeEntity extends ThrownItemEntity {
             float power = 3.0F;
             this.getWorld().createExplosion(this, getX(), getY(), getZ(), power, false, World.ExplosionSourceType.TNT);
 
+            //damaging the owner (not included in explosion damage)
             Entity owner = this.getOwner();
             if (owner instanceof LivingEntity livingOwner) {
-                ExplosivesEnhanced.LOGGER.info("Damaging owner!");
+                //ExplosivesEnhanced.LOGGER.info("Damaging owner!");
                 double dx = livingOwner.getX() - getX();
                 double dy = livingOwner.getEyeY() - getY();
                 double dz = livingOwner.getZ() - getZ();
@@ -52,10 +50,11 @@ public class GrenadeEntity extends ThrownItemEntity {
                         double impact = (1.0 - normDist) * exposure;
                         float damage = (float)((impact * impact + impact) / 2.0 * 7.0 * power + 1.0);
 
-                        livingOwner.damage(this.getWorld().getDamageSources().explosion(this, this.getOwner()), damage);
-                        ExplosivesEnhanced.LOGGER.info("Owner damaged for " + damage + " hearts.");
+                        livingOwner.damage(this.getWorld().getDamageSources().generic(), damage); //damage source must not be explosion to affect owner
+                        //ExplosivesEnhanced.LOGGER.info("Owner damaged for " + damage + " hearts.");
                     }
                 }
+
             }
             this.discard();
         }
