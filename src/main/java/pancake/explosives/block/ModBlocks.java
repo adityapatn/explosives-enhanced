@@ -12,6 +12,17 @@ import net.minecraft.util.Identifier;
 import net.minecraft.sound.BlockSoundGroup;
 import pancake.explosives.ExplosivesEnhanced;
 
+/*
+ * Steps for adding a new item:
+ * Initialize it in class ModItems as an Item
+ * Add it to inventory group
+ * Add texture
+ * Add model json file - name should be same as item name
+ * Add item name translation in en_us.json
+ * Add recipe
+ * Add loot table
+ * */
+
 public class ModBlocks {
 
     public static final Block DynamiteBlock = registerBlock("dynamite_block", new Block(AbstractBlock.Settings.create().sounds(BlockSoundGroup.GRASS).strength(1.0f)));

@@ -15,6 +15,7 @@ import pancake.explosives.ExplosivesEnhanced;
 * Add texture
 * Add model json file - name should be same as item name
 * Add item name translation in en_us.json
+* Add recipe
 * */
 
 public class ModItems {
