@@ -11,7 +11,6 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
-import pancake.explosives.ExplosivesEnhanced;
 import pancake.explosives.item.ModItems;
 import net.minecraft.world.explosion.Explosion;
 import pancake.explosives.registry.ModDamageTypes;
@@ -46,7 +45,7 @@ public class GrenadeEntity extends ThrownItemEntity {
             float damagePower = 4.0F;
             Entity owner = this.getOwner();
             if (owner instanceof LivingEntity livingOwner) {
-                ExplosivesEnhanced.LOGGER.info("Damaging owner!");
+                //ExplosivesEnhanced.LOGGER.info("Damaging owner!");
                 double dx = livingOwner.getX() - getX();
                 double dy = livingOwner.getEyeY() - getY();
                 double dz = livingOwner.getZ() - getZ();
@@ -61,7 +60,7 @@ public class GrenadeEntity extends ThrownItemEntity {
                         float damage = (float)((impact * impact + impact) * 3.5 * damagePower);
 
                         livingOwner.damage(grenadeDamageSource, damage); //damage source must not be explosion to affect owner
-                        ExplosivesEnhanced.LOGGER.info("Owner damaged for " + damage + " hearts.");
+                        //ExplosivesEnhanced.LOGGER.info("Owner damaged for " + damage + " hearts.");
                     }
                 }
             }

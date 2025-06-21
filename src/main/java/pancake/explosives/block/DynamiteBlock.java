@@ -80,7 +80,7 @@ public class DynamiteBlock extends Block {
         //Since owner is excluded from explosion damage calculation, manually apply damage to owner
         float power = 4.0F;
         if (igniter instanceof LivingEntity livingOwner) {
-            ExplosivesEnhanced.LOGGER.info("Damaging owner!");
+            //ExplosivesEnhanced.LOGGER.info("Damaging owner!");
             double dx = livingOwner.getX() - pos.getX();
             double dy = livingOwner.getEyeY() - pos.getY();
             double dz = livingOwner.getZ() - pos.getZ();
@@ -95,7 +95,7 @@ public class DynamiteBlock extends Block {
                     float damage = (float)((impact * impact + impact) * 3.5 * power);
 
                     livingOwner.damage(dynamiteDamageSource, damage); //damage source must not be explosion to affect owner
-                    ExplosivesEnhanced.LOGGER.info("Owner damaged for " + damage + " hearts.");
+                    //ExplosivesEnhanced.LOGGER.info("Owner damaged for " + damage + " hearts.");
                 }
             }
         }
