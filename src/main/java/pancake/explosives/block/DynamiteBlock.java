@@ -6,12 +6,15 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.TntEntity;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -25,6 +28,8 @@ import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import org.jetbrains.annotations.Nullable;
 import pancake.explosives.ExplosivesEnhanced;
+import net.minecraft.util.math.Vec3d;
+import pancake.explosives.registry.ModDamageTypes;
 
 public class DynamiteBlock extends Block {
 
@@ -57,16 +62,43 @@ public class DynamiteBlock extends Block {
     }
 
     public void explode(World world, BlockPos pos) {
-        explode(world, pos, (LivingEntity) null);
+        explode(world, pos, null);
     }
 
     public void explode(World world, BlockPos pos, @Nullable LivingEntity igniter) {
         world.emitGameEvent(igniter, GameEvent.PRIME_FUSE, pos); //game event for listeners like sculk sensors
-        world.playSound((PlayerEntity)null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
+        world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
         //The dynamite should explode
         world.createExplosion(igniter, Explosion.createDamageSource(world, igniter), new ExplosionBehavior(), pos.getX(), pos.getY(), pos.getZ(), 4.0F, false, World.ExplosionSourceType.TNT);
         ExplosivesEnhanced.LOGGER.info("Dynamite exploded!");
+
+        //code for registering the damage type
+        RegistryEntry<DamageType> dynamiteDamageEntry = ModDamageTypes.getDynamiteDamageType((ServerWorld) world);
+        DamageSource dynamiteDamageSource = new DamageSource(dynamiteDamageEntry, null, igniter);
+
+        //Since owner is excluded from explosion damage calculation, manually apply damage to owner
+        float power = 4.0F;
+        if (igniter instanceof LivingEntity livingOwner) {
+            ExplosivesEnhanced.LOGGER.info("Damaging owner!");
+            double dx = livingOwner.getX() - pos.getX();
+            double dy = livingOwner.getEyeY() - pos.getY();
+            double dz = livingOwner.getZ() - pos.getZ();
+            double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+            float radius = power * 2.0f;
+            if (distance <= radius) {
+                float exposure = Explosion.getExposure(Vec3d.ofCenter(pos), livingOwner);
+                if (exposure > 0) {
+                    double normDist = distance / radius;
+                    double impact = (1.0 - normDist) * exposure;
+                    float damage = (float)((impact * impact + impact) * 3.5 * power);
+
+                    livingOwner.damage(dynamiteDamageSource, damage); //damage source must not be explosion to affect owner
+                    ExplosivesEnhanced.LOGGER.info("Owner damaged for " + damage + " hearts.");
+                }
+            }
+        }
     }
 
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {

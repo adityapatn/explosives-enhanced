@@ -21,6 +21,17 @@ public class ModDamageTypes {
                 .orElseThrow(() -> new IllegalStateException("Grenade DamageType not found"));
     }
 
+    public static final RegistryKey<DamageType> DYNAMITE_DAMAGE_KEY =
+            RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of("explosives-enhanced", "dynamite_block"));
+
+    public static RegistryEntry<DamageType> getDynamiteDamageType(ServerWorld world) {
+        RegistryWrapper<DamageType> damageTypes = world.getRegistryManager()
+                .getWrapperOrThrow(RegistryKeys.DAMAGE_TYPE);
+
+        return damageTypes.getOptional(DYNAMITE_DAMAGE_KEY)
+                .orElseThrow(() -> new IllegalStateException("Dynamite DamageType not found"));
+    }
+
     public static void registerModDamageTypes() {
         ExplosivesEnhanced.LOGGER.info("Registering Mod Damage Types for " + ExplosivesEnhanced.MOD_ID);
     }
