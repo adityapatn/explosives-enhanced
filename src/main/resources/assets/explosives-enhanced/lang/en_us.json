@@ -1,4 +1,5 @@
 {
     "item.explosives-enhanced.grenade_item": "Grenade",
-    "block.explosives-enhanced.dynamite_block": "Block of Dynamite"
+    "block.explosives-enhanced.dynamite_block": "Block of Dynamite",
+    "itemgroup.explosives-enhanced.explosives_enhanced_items": "Explosives Enhanced"
 }
