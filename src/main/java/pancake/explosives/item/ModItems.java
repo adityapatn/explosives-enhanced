@@ -6,6 +6,7 @@ import net.minecraft.item.ItemGroups;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Rarity;
 import pancake.explosives.ExplosivesEnhanced;
 
 /*
@@ -20,7 +21,8 @@ import pancake.explosives.ExplosivesEnhanced;
 
 public class ModItems {
 
-    public static final Item GrenadeItem = registerItem("grenade_item", new GrenadeItem(new Item.Settings()));
+    public static final Item GrenadeItem = registerItem("grenade_item", new GrenadeItem(new Item.Settings().maxCount(16)
+            .rarity(Rarity.UNCOMMON)));
 
     private static Item registerItem(String name, Item item) {
         return Registry.register(Registries.ITEM, Identifier.of(ExplosivesEnhanced.MOD_ID, name), item);

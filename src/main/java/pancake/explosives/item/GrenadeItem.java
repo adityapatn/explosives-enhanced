@@ -27,7 +27,7 @@ public class GrenadeItem extends Item implements ProjectileItem {
         if (!world.isClient) {
             GrenadeEntity grenade = new GrenadeEntity(world, user);
             grenade.setItem(itemStack);
-            grenade.setVelocity(user, user.getPitch(), user.getYaw(), 0.0F, 1.5F, 1.0F);
+            grenade.setVelocity(user, user.getPitch(), user.getYaw(), 0.0F, 0.5F, 1.0F);
             world.spawnEntity(grenade);
         }
 
