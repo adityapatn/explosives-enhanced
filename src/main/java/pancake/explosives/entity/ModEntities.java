@@ -10,7 +10,7 @@ public class ModEntities {
 
     public static final EntityType<GrenadeEntity> Grenade = Registry.register(
             Registries.ENTITY_TYPE,
-            Identifier.of(ExplosivesEnhanced.MOD_ID, "grenade"),
+            Identifier.of(ExplosivesEnhanced.MOD_ID, "grenade_entity"), //path is the name of the entity used in JSON files
             EntityType.Builder.<GrenadeEntity>create(GrenadeEntity::new, SpawnGroup.MISC)
                     .dimensions(0.25f, 0.25f) // Size like a snowball
                     .maxTrackingRange(64)

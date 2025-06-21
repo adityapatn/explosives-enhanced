@@ -3,12 +3,18 @@ package pancake.explosives.entity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
+import pancake.explosives.ExplosivesEnhanced;
 import pancake.explosives.item.ModItems;
 import net.minecraft.world.explosion.Explosion;
+import pancake.explosives.registry.ModDamageTypes;
 
 public class GrenadeEntity extends ThrownItemEntity {
 
@@ -24,6 +30,10 @@ public class GrenadeEntity extends ThrownItemEntity {
         return ModItems.GrenadeItem;
     }
 
+    //code for registering the damage type
+    RegistryEntry<DamageType> grenadeDamageEntry = ModDamageTypes.getGrenadeDamageType((ServerWorld) this.getWorld());
+    DamageSource grenadeDamageSource = new DamageSource(grenadeDamageEntry, this, this.getOwner());
+
     @Override
     protected void onCollision(HitResult hitResult) {
         super.onCollision(hitResult);
@@ -36,7 +46,7 @@ public class GrenadeEntity extends ThrownItemEntity {
             //damaging the owner (not included in explosion damage)
             Entity owner = this.getOwner();
             if (owner instanceof LivingEntity livingOwner) {
-                //ExplosivesEnhanced.LOGGER.info("Damaging owner!");
+                ExplosivesEnhanced.LOGGER.info("Damaging owner!");
                 double dx = livingOwner.getX() - getX();
                 double dy = livingOwner.getEyeY() - getY();
                 double dz = livingOwner.getZ() - getZ();
@@ -50,8 +60,8 @@ public class GrenadeEntity extends ThrownItemEntity {
                         double impact = (1.0 - normDist) * exposure;
                         float damage = (float)((impact * impact + impact) / 2.0 * 7.0 * power + 1.0);
 
-                        livingOwner.damage(this.getWorld().getDamageSources().generic(), damage); //damage source must not be explosion to affect owner
-                        //ExplosivesEnhanced.LOGGER.info("Owner damaged for " + damage + " hearts.");
+                        livingOwner.damage(grenadeDamageSource, damage); //damage source must not be explosion to affect owner
+                        ExplosivesEnhanced.LOGGER.info("Owner damaged for " + damage + " hearts.");
                     }
                 }
 

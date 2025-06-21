@@ -8,6 +8,7 @@ import pancake.explosives.block.ModBlocks;
 import pancake.explosives.entity.ModEntities;
 import pancake.explosives.item.ModItemGroups;
 import pancake.explosives.item.ModItems;
+import pancake.explosives.registry.ModDamageTypes;
 
 public class ExplosivesEnhanced implements ModInitializer {
 	public static final String MOD_ID = "explosives-enhanced";
@@ -20,8 +21,6 @@ public class ExplosivesEnhanced implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
-		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution
 
 		LOGGER.info("It works?");
 
@@ -29,5 +28,6 @@ public class ExplosivesEnhanced implements ModInitializer {
 		ModItems.registerModItems();
 		ModBlocks.registerModBlocks();
 		ModEntities.registerModEntities();
+		ModDamageTypes.registerModDamageTypes();
 	}
 }
