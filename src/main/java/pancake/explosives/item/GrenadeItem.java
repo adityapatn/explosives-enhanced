@@ -21,20 +21,20 @@ public class GrenadeItem extends Item implements ProjectileItem {
         super(settings);
     }
 
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack itemStack = user.getStackInHand(hand);
-        world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        ItemStack itemStack = player.getStackInHand(hand);
+        world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
         if (!world.isClient) {
-            GrenadeEntity grenade = new GrenadeEntity(world, user);
+            GrenadeEntity grenade = new GrenadeEntity(world, player);
             grenade.setItem(itemStack);
-            grenade.setOwner(user);
-            grenade.setVelocity(user, user.getPitch(), user.getYaw(), 0.0F, 0.5F, 1.0F);
+            grenade.setOwner(player);
+            grenade.setVelocity(player, player.getPitch(), player.getYaw(), 0.0F, 0.5F, 1.0F);
             world.spawnEntity(grenade);
         }
 
-        user.incrementStat(Stats.USED.getOrCreateStat(this));
-        user.getItemCooldownManager().set(this, 10);
-        itemStack.decrementUnlessCreative(1, user);
+        player.incrementStat(Stats.USED.getOrCreateStat(this));
+        player.getItemCooldownManager().set(this, 10);
+        itemStack.decrementUnlessCreative(1, player);
         return TypedActionResult.success(itemStack, world.isClient());
     }
 
