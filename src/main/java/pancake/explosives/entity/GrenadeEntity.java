@@ -39,7 +39,6 @@ public class GrenadeEntity extends ThrownItemEntity {
         super.onCollision(hitResult);
 
         if (!this.getWorld().isClient()) {
-
             float explosionPower = 2.0F;
             this.getWorld().createExplosion(this, getX(), getY(), getZ(), explosionPower, false, World.ExplosionSourceType.TNT);
 
@@ -65,7 +64,6 @@ public class GrenadeEntity extends ThrownItemEntity {
                         ExplosivesEnhanced.LOGGER.info("Owner damaged for " + damage + " hearts.");
                     }
                 }
-
             }
             this.discard();
         }
