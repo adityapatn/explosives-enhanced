@@ -7,6 +7,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.HitResult;
@@ -30,8 +31,11 @@ public class GrenadeEntity extends ThrownItemEntity {
     }
 
     //code for registering the damage type
+    /*
     RegistryEntry<DamageType> grenadeDamageEntry = ModDamageTypes.getGrenadeDamageType((ServerWorld) this.getWorld());
     DamageSource grenadeDamageSource = new DamageSource(grenadeDamageEntry, this, this.getOwner());
+    */
+    DamageSource grenadeDamageSource = new DamageSource(this.getWorld().getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(ModDamageTypes.GRENADE_DAMAGE_KEY));
 
     @Override
     protected void onCollision(HitResult hitResult) {

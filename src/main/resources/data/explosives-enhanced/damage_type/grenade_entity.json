@@ -1,7 +1,5 @@
 {
   "message_id": "grenade_entity",
-  "exhaustion": 0,
-  "scaling": "never",
-  "effects": "hurt",
-  "death_message_type": "default"
+  "exhaustion": 0.1,
+  "scaling": "when_caused_by_living_non_player"
 }

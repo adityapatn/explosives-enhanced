@@ -10,6 +10,9 @@ import net.minecraft.util.Identifier;
 import pancake.explosives.ExplosivesEnhanced;
 
 public class ModDamageTypes {
+    public static final RegistryKey<DamageType> GRENADE_DAMAGE_KEY = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of(ExplosivesEnhanced.MOD_ID, "grenade_entity"));
+
+   /*
     public static final RegistryKey<DamageType> GRENADE_DAMAGE_KEY =
             RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of("explosives-enhanced", "grenade_entity"));
 
@@ -42,6 +45,7 @@ public class ModDamageTypes {
         return damageTypes.getOptional(LANDSCAPER_DAMAGE_KEY)
                 .orElseThrow(() -> new IllegalStateException("Dynamite DamageType not found"));
     }
+    */
 
     public static void registerModDamageTypes() {
         ExplosivesEnhanced.LOGGER.info("Registering Mod Damage Types for " + ExplosivesEnhanced.MOD_ID);

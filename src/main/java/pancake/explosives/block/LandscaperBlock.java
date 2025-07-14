@@ -67,8 +67,6 @@ public class LandscaperBlock extends Block {
             ExplosivesEnhanced.LOGGER.info("Landscaper exploded!");
 
             //code for registering the damage type
-            RegistryEntry<DamageType> landscaperDamageEntry = ModDamageTypes.getLandscaperDamageType((ServerWorld) world);
-            DamageSource landscaperDamageSource = new DamageSource(landscaperDamageEntry, null, igniter);
 
             //Since owner is excluded from explosion damage calculation, manually apply damage to owner
             float power = 4.0F;
@@ -87,7 +85,7 @@ public class LandscaperBlock extends Block {
                         double impact = (1.0 - normDist) * exposure;
                         float damage = (float) ((impact * impact + impact) * 3.5 * power);
 
-                        livingOwner.damage(landscaperDamageSource, damage); //damage source must not be explosion to affect owner
+                        //livingOwner.damage(landscaperDamageSource, damage); //damage source must not be explosion to affect owner
                         ExplosivesEnhanced.LOGGER.info("Owner damaged for " + damage + " hearts.");
                     }
                 }

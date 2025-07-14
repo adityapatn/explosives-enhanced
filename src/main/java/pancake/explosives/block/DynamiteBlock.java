@@ -57,7 +57,11 @@ public class DynamiteBlock extends Block {
             explode(world, pos, null);
     }
 
+
+
     public void explode(World world, BlockPos pos, @Nullable LivingEntity igniter) {
+
+
         if (!world.isClient()) {
             world.emitGameEvent(igniter, GameEvent.PRIME_FUSE, pos); //game event for listeners like sculk sensors
             world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
@@ -67,8 +71,6 @@ public class DynamiteBlock extends Block {
             ExplosivesEnhanced.LOGGER.info("Dynamite exploded!");
 
             //code for registering the damage type
-            RegistryEntry<DamageType> dynamiteDamageEntry = ModDamageTypes.getDynamiteDamageType((ServerWorld) world);
-            DamageSource dynamiteDamageSource = new DamageSource(dynamiteDamageEntry, null, igniter);
 
             //Since owner is excluded from explosion damage calculation, manually apply damage to owner
             float power = 4.0F;
@@ -87,7 +89,7 @@ public class DynamiteBlock extends Block {
                         double impact = (1.0 - normDist) * exposure;
                         float damage = (float) ((impact * impact + impact) * 3.5 * power);
 
-                        livingOwner.damage(dynamiteDamageSource, damage); //damage source must not be explosion to affect owner
+                        //livingOwner.damage(dynamiteDamageSource, damage); //damage source must not be explosion to affect owner
                         //ExplosivesEnhanced.LOGGER.info("Owner damaged for " + damage + " hearts.");
                     }
                 }
