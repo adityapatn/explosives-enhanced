@@ -4,12 +4,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 import pancake.explosives.item.ModItems;
@@ -29,13 +26,6 @@ public class GrenadeEntity extends ThrownItemEntity {
     protected Item getDefaultItem() {
         return ModItems.GrenadeItem;
     }
-
-    //code for registering the damage type
-    /*
-    RegistryEntry<DamageType> grenadeDamageEntry = ModDamageTypes.getGrenadeDamageType((ServerWorld) this.getWorld());
-    DamageSource grenadeDamageSource = new DamageSource(grenadeDamageEntry, this, this.getOwner());
-    */
-    //Issue with this method of damage source registry is that it does not format the player names properly. Will have to fix.
 
     @Override
     protected void onCollision(HitResult hitResult) {
