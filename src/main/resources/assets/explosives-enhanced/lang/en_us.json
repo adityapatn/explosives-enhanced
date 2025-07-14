@@ -1,6 +1,7 @@
 {
     "item.explosives-enhanced.grenade_item": "Grenade",
     "block.explosives-enhanced.dynamite_block": "Block of Dynamite",
+    "block.explosives-enhanced.landscaper_block": "Landscaper",
     "itemgroup.explosives-enhanced.explosives_enhanced_items": "Explosives Enhanced",
     "death.attack.grenade_entity": "%1$s was blown up by %2$s's grenade",
     "death.attack.grenade_entity.player": "%1$s was blown up by their own grenade",
