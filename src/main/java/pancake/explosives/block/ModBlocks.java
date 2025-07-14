@@ -26,6 +26,7 @@ import pancake.explosives.ExplosivesEnhanced;
 public class ModBlocks {
 
     public static final Block DynamiteBlock = registerBlock("dynamite_block", new DynamiteBlock(AbstractBlock.Settings.create().sounds(BlockSoundGroup.GRASS).strength(1.0f)));
+    public static final Block LandscaperBlock = registerBlock("landscaper_block", new Block(AbstractBlock.Settings.create().sounds(BlockSoundGroup.CROP).strength(1.0f)));
 
     private static Block registerBlock(String name, Block block) {
         registerBlockItem(name, block);
@@ -41,6 +42,7 @@ public class ModBlocks {
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(entries -> {
             entries.add(DynamiteBlock);
+            entries.add(LandscaperBlock);
         });
     }
 }
