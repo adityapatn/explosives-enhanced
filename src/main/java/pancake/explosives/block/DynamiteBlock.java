@@ -128,7 +128,6 @@ public class DynamiteBlock extends Block {
                 world.removeBlock(blockPos, false);
             }
         }
-
     }
 
     public boolean shouldDropItemsOnExplosion(Explosion explosion) {

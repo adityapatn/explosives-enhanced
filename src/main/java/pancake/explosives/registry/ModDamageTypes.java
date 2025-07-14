@@ -32,6 +32,17 @@ public class ModDamageTypes {
                 .orElseThrow(() -> new IllegalStateException("Dynamite DamageType not found"));
     }
 
+    public static final RegistryKey<DamageType> LANDSCAPER_DAMAGE_KEY =
+            RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of("explosives-enhanced", "landscaper_block"));
+
+    public static RegistryEntry<DamageType> getLandscaperDamageType(ServerWorld world) {
+        RegistryWrapper<DamageType> damageTypes = world.getRegistryManager()
+                .getWrapperOrThrow(RegistryKeys.DAMAGE_TYPE);
+
+        return damageTypes.getOptional(LANDSCAPER_DAMAGE_KEY)
+                .orElseThrow(() -> new IllegalStateException("Dynamite DamageType not found"));
+    }
+
     public static void registerModDamageTypes() {
         ExplosivesEnhanced.LOGGER.info("Registering Mod Damage Types for " + ExplosivesEnhanced.MOD_ID);
     }
