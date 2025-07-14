@@ -18,6 +18,7 @@ public class ModItemGroups {
                     .entries((displayContext, entries) -> {
                         entries.add(ModItems.GrenadeItem);
                         entries.add(ModBlocks.DynamiteBlock);
+                        entries.add(ModBlocks.LandscaperBlock);
                     })
                     .build());
 
