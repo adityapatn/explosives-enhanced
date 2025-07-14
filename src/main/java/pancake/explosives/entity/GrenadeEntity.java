@@ -35,7 +35,7 @@ public class GrenadeEntity extends ThrownItemEntity {
     RegistryEntry<DamageType> grenadeDamageEntry = ModDamageTypes.getGrenadeDamageType((ServerWorld) this.getWorld());
     DamageSource grenadeDamageSource = new DamageSource(grenadeDamageEntry, this, this.getOwner());
     */
-    DamageSource grenadeDamageSource = new DamageSource(this.getWorld().getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(ModDamageTypes.GRENADE_DAMAGE_KEY));
+    //Issue with this method of damage source registry is that it does not format the player names properly. Will have to fix.
 
     @Override
     protected void onCollision(HitResult hitResult) {
@@ -62,6 +62,9 @@ public class GrenadeEntity extends ThrownItemEntity {
                         double normDist = distance / radius;
                         double impact = (1.0 - normDist) * exposure;
                         float damage = (float)((impact * impact + impact) * 3.5 * damagePower);
+
+                        //code for creating custom damage source
+                        DamageSource grenadeDamageSource = new DamageSource(this.getWorld().getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(ModDamageTypes.GRENADE_DAMAGE_KEY), owner);
 
                         livingOwner.damage(grenadeDamageSource, damage); //damage source must not be explosion to affect owner
                         //ExplosivesEnhanced.LOGGER.info("Owner damaged for " + damage + " hearts.");
