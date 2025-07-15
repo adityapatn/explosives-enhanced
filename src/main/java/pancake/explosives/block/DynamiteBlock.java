@@ -89,8 +89,8 @@ public class DynamiteBlock extends Block {
                         double impact = (1.0 - normDist) * exposure;
                         float damage = (float) ((impact * impact + impact) * 3.5 * power);
 
-                        //livingOwner.damage(dynamiteDamageSource, damage); //damage source must not be explosion to affect owner
-                        //ExplosivesEnhanced.LOGGER.info("Owner damaged for " + damage + " hearts.");
+                        DamageSource dynamiteDamageSource = ModDamageTypes.createDynamiteEntityDamage(world, igniter, igniter);
+                        livingOwner.damage(dynamiteDamageSource, damage); //damage source must not be explosion to affect owner
                     }
                 }
             }

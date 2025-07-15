@@ -85,8 +85,8 @@ public class LandscaperBlock extends Block {
                         double impact = (1.0 - normDist) * exposure;
                         float damage = (float) ((impact * impact + impact) * 3.5 * power);
 
-                        //livingOwner.damage(landscaperDamageSource, damage); //damage source must not be explosion to affect owner
-                        ExplosivesEnhanced.LOGGER.info("Owner damaged for " + damage + " hearts.");
+                        DamageSource landscaperDamageSource = ModDamageTypes.createDynamiteEntityDamage(world, igniter, igniter);
+                        livingOwner.damage(landscaperDamageSource, damage); //damage source must not be explosion to affect owner
                     }
                 }
             }

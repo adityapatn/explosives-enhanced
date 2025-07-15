@@ -5,8 +5,8 @@
     "itemgroup.explosives-enhanced.explosives_enhanced_items": "Explosives Enhanced",
     "death.attack.grenade_entity": "%1$s was blown up by their own grenade",
     "death.attack.grenade_entity.player": "%1$s was blown up by %2$s's grenade",
-    "death.attack.dynamite_block": "%1$s was blown to bits by %2$s",
-    "death.attack.dynamite_block.player": "%1$s was blown to bits by their own dynamite",
-    "death.attack.landscaper_block": "%1$s was pruned by %2$s",
-    "death.attack.landscape_block.player": "%1$s was pruned by their own landscaper"
+    "death.attack.dynamite_block.player": "%1$s was blown to bits by %2$s",
+    "death.attack.dynamite_block": "%1$s was blown to bits by their own dynamite",
+    "death.attack.landscaper_block.player": "%1$s was pruned by %2$s",
+    "death.attack.landscape_block": "%1$s was pruned by their own landscaper"
 }
