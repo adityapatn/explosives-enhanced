@@ -54,28 +54,28 @@ public class DynamiteBlock extends Block {
     }
 
     public void onDestroyedByExplosion(World world, BlockPos pos, Explosion explosion) {
-            explode(world, pos, null);
+            explode(world, pos, explosion.getCausingEntity());
     }
 
 
 
     public void explode(World world, BlockPos pos, @Nullable LivingEntity igniter) {
 
-
         if (!world.isClient()) {
             world.emitGameEvent(igniter, GameEvent.PRIME_FUSE, pos); //game event for listeners like sculk sensors
             world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
+            DamageSource dynamiteDamageSource = ModDamageTypes.createDynamiteEntityDamage(world, igniter, igniter);
+
             //The dynamite should explode
-            world.createExplosion(igniter, Explosion.createDamageSource(world, igniter), new ExplosionBehavior(), pos.getX(), pos.getY(), pos.getZ(), 4.0F, false, World.ExplosionSourceType.TNT);
+            world.createExplosion(igniter, dynamiteDamageSource, new ExplosionBehavior(), pos.getX(), pos.getY(), pos.getZ(), 4.0F, false, World.ExplosionSourceType.TNT);
             ExplosivesEnhanced.LOGGER.info("Dynamite exploded!");
 
-            //code for registering the damage type
-
-            //Since owner is excluded from explosion damage calculation, manually apply damage to owner
+            //Switch to dynamiteDamageSource, manual owner damage application not necessary
+            /*
             float power = 4.0F;
             if (igniter instanceof LivingEntity livingOwner) {
-                //ExplosivesEnhanced.LOGGER.info("Damaging owner!");
+                ExplosivesEnhanced.LOGGER.info("Damaging owner!");
                 double dx = livingOwner.getX() - pos.getX();
                 double dy = livingOwner.getEyeY() - pos.getY();
                 double dz = livingOwner.getZ() - pos.getZ();
@@ -89,11 +89,11 @@ public class DynamiteBlock extends Block {
                         double impact = (1.0 - normDist) * exposure;
                         float damage = (float) ((impact * impact + impact) * 3.5 * power);
 
-                        DamageSource dynamiteDamageSource = ModDamageTypes.createDynamiteEntityDamage(world, igniter, igniter);
                         livingOwner.damage(dynamiteDamageSource, damage); //damage source must not be explosion to affect owner
                     }
                 }
             }
+             */
         }
     }
 
