@@ -60,40 +60,19 @@ public class DynamiteBlock extends Block {
 
 
     public void explode(World world, BlockPos pos, @Nullable LivingEntity igniter) {
-
         if (!world.isClient()) {
             world.emitGameEvent(igniter, GameEvent.PRIME_FUSE, pos); //game event for listeners like sculk sensors
             world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
+            ExplosivesEnhanced.LOGGER.info("Igniter: " + igniter);
+            ExplosivesEnhanced.LOGGER.info("Is igniter living: " + (igniter instanceof LivingEntity));
+            //non-null attacker AND ENTITY SOURCE triggers .player death message – block source is environmental (must summon DynamiteEntity to cause explosion)
             DamageSource dynamiteDamageSource = ModDamageTypes.createDynamiteEntityDamage(world, igniter, igniter);
 
-            //The dynamite should explode
+            //Dynamite explodes
             world.createExplosion(igniter, dynamiteDamageSource, new ExplosionBehavior(), pos.getX(), pos.getY(), pos.getZ(), 4.0F, false, World.ExplosionSourceType.TNT);
             ExplosivesEnhanced.LOGGER.info("Dynamite exploded!");
 
-            //Switch to dynamiteDamageSource, manual owner damage application not necessary
-            /*
-            float power = 4.0F;
-            if (igniter instanceof LivingEntity livingOwner) {
-                ExplosivesEnhanced.LOGGER.info("Damaging owner!");
-                double dx = livingOwner.getX() - pos.getX();
-                double dy = livingOwner.getEyeY() - pos.getY();
-                double dz = livingOwner.getZ() - pos.getZ();
-                double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-
-                float radius = power * 2.0f;
-                if (distance <= radius) {
-                    float exposure = Explosion.getExposure(Vec3d.ofCenter(pos), livingOwner);
-                    if (exposure > 0) {
-                        double normDist = distance / radius;
-                        double impact = (1.0 - normDist) * exposure;
-                        float damage = (float) ((impact * impact + impact) * 3.5 * power);
-
-                        livingOwner.damage(dynamiteDamageSource, damage); //damage source must not be explosion to affect owner
-                    }
-                }
-            }
-             */
         }
     }
 
