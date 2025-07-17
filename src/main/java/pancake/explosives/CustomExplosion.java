@@ -32,15 +32,19 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.explosion.EntityExplosionBehavior;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+
+//the way this class should be used is that CustomExplosion.createCustomExplosion should be called, which will then create a CustomExplosion instance and call the correct methods for carrying out the explosion
 public class CustomExplosion extends Explosion {
     private static final ExplosionBehavior DEFAULT_BEHAVIOR = new ExplosionBehavior();
     private final boolean createFire;
+    private final boolean doParticles;
     private final DestructionType destructionType;
     private final Random random;
     private final World world;
@@ -61,37 +65,28 @@ public class CustomExplosion extends Explosion {
     * Data flow for destructionType:
     * World.createExplosion(explosionSourceType)
     * using switch of explosionSourceType.ordinal(), set var10000 and then destructionType
-    * Explosion.DestructionType var10000;
-        switch (explosionSourceType.ordinal()) {
-            case 0 -> var10000 = DestructionType.KEEP;
-            case 1 -> var10000 = this.getDestructionType(GameRules.BLOCK_EXPLOSION_DROP_DECAY);
-            case 2 -> var10000 = this.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) ? this.getDestructionType(GameRules.MOB_EXPLOSION_DROP_DECAY) : DestructionType.KEEP;
-            case 3 -> var10000 = this.getDestructionType(GameRules.TNT_EXPLOSION_DROP_DECAY);
-            case 4 -> var10000 = DestructionType.TRIGGER_BLOCK;
-            default -> throw new MatchException((String)null, (Throwable)null);
-        }
-
-        Explosion.DestructionType destructionType = var10000;
     * call Explosion constructor, passing destructionType as argument
     * */
 
-    private Explosion.DestructionType getDestructionType(GameRules.Key<GameRules.BooleanRule> gameRuleKey) {
-        return this.getGameRules().getBoolean(gameRuleKey) ? DestructionType.DESTROY_WITH_DECAY : DestructionType.DESTROY;
+    private Explosion.DestructionType getDestructionTypeFromRule(GameRules.Key<GameRules.BooleanRule> gameRuleKey) {
+        return world.getGameRules().getBoolean(gameRuleKey) ? DestructionType.DESTROY_WITH_DECAY : DestructionType.DESTROY;
     }
 
-    private DestructionType getDestructionFromSource(World world, World.ExplosionSourceType sourceType) {
-        Explosion.DestructionType var10000;
+    private DestructionType getDestructionFromSource(World.ExplosionSourceType sourceType) {
+        Explosion.DestructionType tempDestructionType;
         switch (sourceType.ordinal()) {
-            case 0 -> var10000 = DestructionType.KEEP;
-            case 1 -> var10000 = world.getDestructionType(GameRules.BLOCK_EXPLOSION_DROP_DECAY);
-            case 2 -> var10000 = world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) ? this.getDestructionType(GameRules.MOB_EXPLOSION_DROP_DECAY) : DestructionType.KEEP;
-            case 3 -> var10000 = world.getDestructionType(GameRules.TNT_EXPLOSION_DROP_DECAY);
-            case 4 -> var10000 = DestructionType.TRIGGER_BLOCK;
+            case 0 -> tempDestructionType = DestructionType.KEEP;
+            case 1 -> tempDestructionType = this.getDestructionTypeFromRule(GameRules.BLOCK_EXPLOSION_DROP_DECAY);
+            case 2 -> tempDestructionType = world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) ? this.getDestructionTypeFromRule(GameRules.MOB_EXPLOSION_DROP_DECAY) : DestructionType.KEEP;
+            case 3 -> tempDestructionType = this.getDestructionTypeFromRule(GameRules.TNT_EXPLOSION_DROP_DECAY);
+            case 4 -> tempDestructionType = DestructionType.TRIGGER_BLOCK;
             default -> throw new MatchException((String)null, (Throwable)null);
         }
+        return tempDestructionType;
+    }
 
-        Explosion.DestructionType destructionType = var10000;
-
+    private ExplosionBehavior chooseBehavior(@Nullable Entity entity) {
+        return (ExplosionBehavior)(entity == null ? DEFAULT_BEHAVIOR : new EntityExplosionBehavior(entity));
     }
 
     public CustomExplosion(World world, @Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, double x, double y, double z, float power, boolean createFire, @Nullable Explosion.DestructionType destructionType, @Nullable ParticleEffect particle, @Nullable ParticleEffect emitterParticle, RegistryEntry<SoundEvent> soundEvent) {
@@ -113,15 +108,17 @@ public class CustomExplosion extends Explosion {
         this.createFire = createFire;
         this.destructionType = destructionType == null ? defaultDestructionType : destructionType;
         this.damageSource = damageSource == null ? world.getDamageSources().explosion(this) : damageSource;
-        this.behavior = behavior;
+        this.behavior = behavior == null ? this.chooseBehavior(entity) : behavior;
         this.particle = particle == null ? defaultParticle : particle;
         this.emitterParticle = emitterParticle == null ? defaultEmitterParticle : emitterParticle;
+        this.doParticles = this.particle != null && this.emitterParticle != null;
         this.soundEvent = soundEvent;
     }
 
-    public Explosion createCustomExplosion() {
-        //this method mirrors the World.createExplosion method, without the switch for destruction type since it is set in the constructor
-        CustomExplosion explosion = new CustomExplosion(world, entity, damageSource, behavior, x, y, z, power, createFire, destructionType, null, null, soundEvent);
+    public Explosion createCustomExplosion(World world, @Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, double x, double y, double z, float power, boolean createFire, @Nullable World.ExplosionSourceType sourceType, @Nullable ParticleEffect particle, @Nullable ParticleEffect emitterParticle, RegistryEntry<SoundEvent> soundEvent) {
+        //this method mirrors the World.createExplosion method, with the switch for destruction type handled separately
+
+        CustomExplosion explosion = new CustomExplosion(world, entity, damageSource, behavior, x, y, z, power, createFire, sourceType == null ? null : getDestructionFromSource(sourceType), particle, emitterParticle, soundEvent);
         explosion.collectBlocksAndDamageEntities();
         explosion.affectWorld();
         return explosion;
@@ -259,32 +256,46 @@ public class CustomExplosion extends Explosion {
         stacks.add(Pair.of(stack, pos));
     }
 
-
+    //not an @Override because the superclass method has a boolean parameter, I just used this.doParticles
     public void affectWorld() {
         if (this.world.isClient) {
             this.world.playSound(this.x, this.y, this.z, (SoundEvent)this.soundEvent.value(), SoundCategory.BLOCKS, 4.0F, (1.0F + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.2F) * 0.7F, false);
         }
 
-        this.world.getProfiler().push("explosion_blocks");
-        List<Pair<ItemStack, BlockPos>> list = new ArrayList();
-        Util.shuffle(this.affectedBlocks, this.world.random);
-        ObjectListIterator var4 = this.affectedBlocks.iterator();
+        boolean bl = this.shouldDestroy();
+        if (this.doParticles) {
+            ParticleEffect particleEffect;
+            if (!(this.power < 2.0F) && bl) {
+                particleEffect = this.emitterParticle;
+            } else {
+                particleEffect = this.particle;
+            }
 
-        while(var4.hasNext()) {
-            BlockPos blockPos = (BlockPos)var4.next();
-            this.world.getBlockState(blockPos).onExploded(this.world, blockPos, this, (stack, pos) -> {
-                tryMergeStack(list, stack, pos);
-            });
+            this.world.addParticle(particleEffect, this.x, this.y, this.z, 1.0, 0.0, 0.0);
         }
 
-        Iterator var8 = list.iterator();
+        if (bl) {
+            this.world.getProfiler().push("explosion_blocks");
+            List<Pair<ItemStack, BlockPos>> list = new ArrayList();
+            Util.shuffle(this.affectedBlocks, this.world.random);
+            ObjectListIterator var4 = this.affectedBlocks.iterator();
 
-        while(var8.hasNext()) {
-            Pair<ItemStack, BlockPos> pair = (Pair)var8.next();
-            Block.dropStack(this.world, (BlockPos)pair.getSecond(), (ItemStack)pair.getFirst());
+            while(var4.hasNext()) {
+                BlockPos blockPos = (BlockPos)var4.next();
+                this.world.getBlockState(blockPos).onExploded(this.world, blockPos, this, (stack, pos) -> {
+                    tryMergeStack(list, stack, pos);
+                });
+            }
+
+            Iterator var8 = list.iterator();
+
+            while(var8.hasNext()) {
+                Pair<ItemStack, BlockPos> pair = (Pair)var8.next();
+                Block.dropStack(this.world, (BlockPos)pair.getSecond(), (ItemStack)pair.getFirst());
+            }
+
+            this.world.getProfiler().pop();
         }
-
-        this.world.getProfiler().pop();
 
         if (this.createFire) {
             ObjectListIterator var7 = this.affectedBlocks.iterator();
@@ -296,6 +307,5 @@ public class CustomExplosion extends Explosion {
                 }
             }
         }
-
     }
 }
