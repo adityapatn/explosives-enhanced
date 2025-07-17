@@ -233,6 +233,9 @@ public class CustomExplosion extends Explosion {
             x /= z;
             y /= z;
             if (this.behavior.shouldDamage(this, entity)) {
+                ExplosivesEnhanced.LOGGER.info("Damaging entity: " + entity);
+                ExplosivesEnhanced.LOGGER.info("DamageSource attacker at damage time: " + this.damageSource.getAttacker());
+                ExplosivesEnhanced.LOGGER.info("DamageSource source at damage time: " + this.damageSource.getSource());
                 entity.damage(this.damageSource, this.behavior.calculateDamage(this, entity));
             }
 
@@ -261,7 +264,7 @@ public class CustomExplosion extends Explosion {
 
     private static void tryMergeStack(List<Pair<ItemStack, BlockPos>> stacks, ItemStack stack, BlockPos pos) {
         for(int i = 0; i < stacks.size(); ++i) {
-            Pair<ItemStack, BlockPos> pair = (Pair)stacks.get(i);
+            Pair<ItemStack, BlockPos> pair = stacks.get(i);
             ItemStack itemStack = (ItemStack)pair.getFirst();
             if (ItemEntity.canMerge(itemStack, stack)) {
                 stacks.set(i, Pair.of(ItemEntity.merge(itemStack, stack, 16), (BlockPos)pair.getSecond()));

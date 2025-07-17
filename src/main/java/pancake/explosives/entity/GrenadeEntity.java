@@ -1,20 +1,18 @@
 package pancake.explosives.entity;
 
-import net.fabricmc.fabric.api.entity.event.v1.EntityElytraEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
-import net.minecraft.world.explosion.ExplosionBehavior;
 import pancake.explosives.CustomExplosion;
 import pancake.explosives.ExplosivesEnhanced;
 import pancake.explosives.item.ModItems;
-import net.minecraft.world.explosion.Explosion;
 import pancake.explosives.registry.ModDamageTypes;
 
 /*
@@ -48,18 +46,20 @@ public class GrenadeEntity extends ThrownItemEntity {
             float explosionPower = 2.0F;
             Entity owner = this.getOwner();
             ExplosivesEnhanced.LOGGER.info("Owner: " + owner);
-            ExplosivesEnhanced.LOGGER.info("Is owner living: " + (owner instanceof LivingEntity));
+            ExplosivesEnhanced.LOGGER.info("Is owner a player: " + (owner instanceof PlayerEntity));
 
             DamageSource grenadeDamageSource = ModDamageTypes.createGrenadeEntityDamage(world, this, owner);
+            ExplosivesEnhanced.LOGGER.info("DamageSource attacker: " + grenadeDamageSource.getAttacker());
+            ExplosivesEnhanced.LOGGER.info("DamageSource source: " + grenadeDamageSource.getSource());
             //(this, null) does not cause .player message, (this, owner) doesn't either: for default explosion
-
-            //world.createExplosion(this, grenadeDamageSource, new ExplosionBehavior(), getX(), getY(), getZ(), explosionPower, false, World.ExplosionSourceType.TNT);
-
-            CustomExplosion grenadeExplosion = new CustomExplosion(world, this, grenadeDamageSource, null, prevX, prevY, prevZ, 4.0F, false, World.ExplosionSourceType.TNT, null, null, SoundEvents.ENTITY_GENERIC_EXPLODE);
+            
+            //maybe issue is sourceType.TNT
+            CustomExplosion grenadeExplosion = new CustomExplosion(world, this, grenadeDamageSource, null, prevX, prevY, prevZ, explosionPower, false, World.ExplosionSourceType.NONE, null, null, SoundEvents.ENTITY_GENERIC_EXPLODE);
             grenadeExplosion.explode();
-        ExplosivesEnhanced.LOGGER.info("Causing explosion.");
+            ExplosivesEnhanced.LOGGER.info("Causing explosion.");
 
             this.discard();
         }
     }
 }
+//Now we should test with SourceType.NONE

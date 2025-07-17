@@ -7,7 +7,6 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import pancake.explosives.ExplosivesEnhanced;
-import pancake.explosives.block.DynamiteBlock;
 
 public class ModDamageTypes {
 
