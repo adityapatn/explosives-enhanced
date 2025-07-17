@@ -17,10 +17,12 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Util;
@@ -40,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 
-//the way this class should be used is that CustomExplosion.createCustomExplosion should be called, which will then create a CustomExplosion instance and call the correct methods for carrying out the explosion
+//the way this class should be used is that a CustomExplosion object is created with the proper arguments, then the explode method is called to cause an explosion
 public class CustomExplosion extends Explosion {
     private static final ExplosionBehavior DEFAULT_BEHAVIOR = new ExplosionBehavior();
     private final boolean createFire;
@@ -61,6 +63,7 @@ public class CustomExplosion extends Explosion {
     private final RegistryEntry<SoundEvent> soundEvent;
     private final ObjectArrayList<BlockPos> affectedBlocks;
     private final Map<PlayerEntity, Vec3d> affectedPlayers;
+
     /*
     * Data flow for destructionType:
     * World.createExplosion(explosionSourceType)
@@ -89,9 +92,9 @@ public class CustomExplosion extends Explosion {
         return (ExplosionBehavior)(entity == null ? DEFAULT_BEHAVIOR : new EntityExplosionBehavior(entity));
     }
 
-    public CustomExplosion(World world, @Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, double x, double y, double z, float power, boolean createFire, @Nullable Explosion.DestructionType destructionType, @Nullable ParticleEffect particle, @Nullable ParticleEffect emitterParticle, RegistryEntry<SoundEvent> soundEvent) {
+    public CustomExplosion(World world, @Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, double x, double y, double z, float power, boolean createFire, @Nullable World.ExplosionSourceType sourceType, @Nullable ParticleEffect particle, @Nullable ParticleEffect emitterParticle, RegistryEntry<SoundEvent> soundEvent) {
         //this line does literally nothing because all the Explosion properties are private and the constructor does nothing else but set them
-        super(world, entity, damageSource, behavior, x, y, z, power, createFire, destructionType, particle, emitterParticle, soundEvent);
+        super(world, entity, damageSource, behavior, x, y, z, power, createFire, null, particle, emitterParticle, soundEvent);
         Explosion.DestructionType defaultDestructionType = world.getGameRules().getBoolean(GameRules.BLOCK_EXPLOSION_DROP_DECAY) ? DestructionType.DESTROY_WITH_DECAY : DestructionType.DESTROY;
         SimpleParticleType defaultParticle = ParticleTypes.EXPLOSION;
         SimpleParticleType defaultEmitterParticle = ParticleTypes.EXPLOSION_EMITTER;
@@ -106,7 +109,7 @@ public class CustomExplosion extends Explosion {
         this.y = y;
         this.z = z;
         this.createFire = createFire;
-        this.destructionType = destructionType == null ? defaultDestructionType : destructionType;
+        this.destructionType = sourceType == null ? defaultDestructionType : getDestructionFromSource(sourceType);
         this.damageSource = damageSource == null ? world.getDamageSources().explosion(this) : damageSource;
         this.behavior = behavior == null ? this.chooseBehavior(entity) : behavior;
         this.particle = particle == null ? defaultParticle : particle;
@@ -115,13 +118,28 @@ public class CustomExplosion extends Explosion {
         this.soundEvent = soundEvent;
     }
 
-    public Explosion createCustomExplosion(World world, @Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, double x, double y, double z, float power, boolean createFire, @Nullable World.ExplosionSourceType sourceType, @Nullable ParticleEffect particle, @Nullable ParticleEffect emitterParticle, RegistryEntry<SoundEvent> soundEvent) {
-        //this method mirrors the World.createExplosion method, with the switch for destruction type handled separately
+    public Explosion explode() {
+        collectBlocksAndDamageEntities();
+        affectWorld();
+        if (!world.isClient && world instanceof ServerWorld serverWorld) {
+            serverWorld.getChunkManager().sendToNearbyPlayers(
+                    entity,
+                    new ExplosionS2CPacket(
+                            x,
+                            y,
+                            z,
+                            power,
+                            affectedBlocks,   // your affectedBlocks list
+                            Vec3d.ZERO,
+                            destructionType,
+                            particle,
+                            emitterParticle,
+                            soundEvent
+                    )
+            );
+        }
 
-        CustomExplosion explosion = new CustomExplosion(world, entity, damageSource, behavior, x, y, z, power, createFire, sourceType == null ? null : getDestructionFromSource(sourceType), particle, emitterParticle, soundEvent);
-        explosion.collectBlocksAndDamageEntities();
-        explosion.affectWorld();
-        return explosion;
+        return this;
     }
 
     @Override
