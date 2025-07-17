@@ -18,8 +18,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -38,100 +36,19 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class CustomExplosion extends Explosion {
-    private static final ExplosionBehavior DEFAULT_BEHAVIOR = new ExplosionBehavior();
-    private final boolean createFire;
-    private final DestructionType destructionType;
-    private final Random random;
-    private final World world;
-    private final double x;
-    private final double y;
-    private final double z;
-    @Nullable
-    private final Entity entity;
-    private final float power;
-    private final DamageSource damageSource;
-    private final ExplosionBehavior behavior;
-    private final ParticleEffect particle;
-    private final ParticleEffect emitterParticle;
-    private final RegistryEntry<SoundEvent> soundEvent;
-    private final ObjectArrayList<BlockPos> affectedBlocks;
-    private final Map<PlayerEntity, Vec3d> affectedPlayers;
-    /*
-    * Data flow for destructionType:
-    * World.createExplosion(explosionSourceType)
-    * using switch of explosionSourceType.ordinal(), set var10000 and then destructionType
-    * Explosion.DestructionType var10000;
-        switch (explosionSourceType.ordinal()) {
-            case 0 -> var10000 = DestructionType.KEEP;
-            case 1 -> var10000 = this.getDestructionType(GameRules.BLOCK_EXPLOSION_DROP_DECAY);
-            case 2 -> var10000 = this.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) ? this.getDestructionType(GameRules.MOB_EXPLOSION_DROP_DECAY) : DestructionType.KEEP;
-            case 3 -> var10000 = this.getDestructionType(GameRules.TNT_EXPLOSION_DROP_DECAY);
-            case 4 -> var10000 = DestructionType.TRIGGER_BLOCK;
-            default -> throw new MatchException((String)null, (Throwable)null);
-        }
+public class ExplosionLogicUpdate {
 
-        Explosion.DestructionType destructionType = var10000;
-    * call Explosion constructor, passing destructionType as argument
-    * */
+    public Explosion createCustomExplosion(World world, @Nullable Entity entity, DamageSource damageSource, double x, double y, double z, float power) {
 
-    private Explosion.DestructionType getDestructionType(GameRules.Key<GameRules.BooleanRule> gameRuleKey) {
-        return this.getGameRules().getBoolean(gameRuleKey) ? DestructionType.DESTROY_WITH_DECAY : DestructionType.DESTROY;
-    }
-
-    private DestructionType getDestructionFromSource(World world, World.ExplosionSourceType sourceType) {
-        Explosion.DestructionType var10000;
-        switch (sourceType.ordinal()) {
-            case 0 -> var10000 = DestructionType.KEEP;
-            case 1 -> var10000 = world.getDestructionType(GameRules.BLOCK_EXPLOSION_DROP_DECAY);
-            case 2 -> var10000 = world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) ? this.getDestructionType(GameRules.MOB_EXPLOSION_DROP_DECAY) : DestructionType.KEEP;
-            case 3 -> var10000 = world.getDestructionType(GameRules.TNT_EXPLOSION_DROP_DECAY);
-            case 4 -> var10000 = DestructionType.TRIGGER_BLOCK;
-            default -> throw new MatchException((String)null, (Throwable)null);
-        }
-
-        Explosion.DestructionType destructionType = var10000;
-
-    }
-
-    public CustomExplosion(World world, @Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, double x, double y, double z, float power, boolean createFire, @Nullable Explosion.DestructionType destructionType, @Nullable ParticleEffect particle, @Nullable ParticleEffect emitterParticle, RegistryEntry<SoundEvent> soundEvent) {
-        //this line does literally nothing because all the Explosion properties are private and the constructor does nothing else but set them
-        super(world, entity, damageSource, behavior, x, y, z, power, createFire, destructionType, particle, emitterParticle, soundEvent);
-        Explosion.DestructionType defaultDestructionType = world.getGameRules().getBoolean(GameRules.BLOCK_EXPLOSION_DROP_DECAY) ? DestructionType.DESTROY_WITH_DECAY : DestructionType.DESTROY;
-        SimpleParticleType defaultParticle = ParticleTypes.EXPLOSION;
-        SimpleParticleType defaultEmitterParticle = ParticleTypes.EXPLOSION_EMITTER;
-
-        this.random = Random.create();
-        this.affectedBlocks = new ObjectArrayList();
-        this.affectedPlayers = Maps.newHashMap();
-        this.world = world;
-        this.entity = entity;
-        this.power = power;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.createFire = createFire;
-        this.destructionType = destructionType == null ? defaultDestructionType : destructionType;
-        this.damageSource = damageSource == null ? world.getDamageSources().explosion(this) : damageSource;
-        this.behavior = behavior;
-        this.particle = particle == null ? defaultParticle : particle;
-        this.emitterParticle = emitterParticle == null ? defaultEmitterParticle : emitterParticle;
-        this.soundEvent = soundEvent;
-    }
-
-    public Explosion createCustomExplosion() {
-        //this method mirrors the World.createExplosion method, without the switch for destruction type since it is set in the constructor
-        CustomExplosion explosion = new CustomExplosion(world, entity, damageSource, behavior, x, y, z, power, createFire, destructionType, null, null, soundEvent);
-        explosion.collectBlocksAndDamageEntities();
-        explosion.affectWorld();
-        return explosion;
+        //always uses DESTROY destruction type
+        Explosion.DestructionType destructionType = world.getGameRules().getBoolean(GameRules.BLOCK_EXPLOSION_DROP_DECAY) ? DestructionType.DESTROY_WITH_DECAY : DestructionType.DESTROY;
+        //collectBlocksAndDamageEntities(world);
     }
 
     @Override
-    public void collectBlocksAndDamageEntities() {
-        this.world.emitGameEvent(this.entity, GameEvent.EXPLODE, new Vec3d(this.x, this.y, this.z));
+    public void collectBlocksAndDamageEntities(World world, @Nullable Entity entity, double x, double y, double z, float power, ExplosionBehavior behavior, ) {
+        world.emitGameEvent(entity, GameEvent.EXPLODE, new Vec3d(x, y, z));
         Set<BlockPos> set = Sets.newHashSet();
-
         int k;
         int l;
         for(int j = 0; j < 16; ++j) {
@@ -145,25 +62,25 @@ public class CustomExplosion extends Explosion {
                         d /= g;
                         e /= g;
                         f /= g;
-                        float h = this.power * (0.7F + this.world.random.nextFloat() * 0.6F);
-                        double m = this.x;
-                        double n = this.y;
-                        double o = this.z;
+                        float h = power * (0.7F + world.random.nextFloat() * 0.6F);
+                        double m = x;
+                        double n = y;
+                        double o = z;
 
                         for(float p = 0.3F; h > 0.0F; h -= 0.22500001F) {
                             BlockPos blockPos = BlockPos.ofFloored(m, n, o);
-                            BlockState blockState = this.world.getBlockState(blockPos);
-                            FluidState fluidState = this.world.getFluidState(blockPos);
-                            if (!this.world.isInBuildLimit(blockPos)) {
+                            BlockState blockState = world.getBlockState(blockPos);
+                            FluidState fluidState = world.getFluidState(blockPos);
+                            if (!world.isInBuildLimit(blockPos)) {
                                 break;
                             }
 
-                            Optional<Float> optional = this.behavior.getBlastResistance(this, this.world, blockPos, blockState, fluidState);
+                            Optional<Float> optional = behavior.getBlastResistance(this, world, blockPos, blockState, fluidState);
                             if (optional.isPresent()) {
                                 h -= ((Float)optional.get() + 0.3F) * 0.3F;
                             }
 
-                            if (h > 0.0F && this.behavior.canDestroyBlock(this, this.world, blockPos, blockState, h)) {
+                            if (h > 0.0F && behavior.canDestroyBlock(this, world, blockPos, blockState, h)) {
                                 set.add(blockPos);
                             }
 
