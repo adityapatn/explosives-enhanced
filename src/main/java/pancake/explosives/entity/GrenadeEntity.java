@@ -53,8 +53,8 @@ public class GrenadeEntity extends ThrownItemEntity {
             ExplosivesEnhanced.LOGGER.info("DamageSource source: " + grenadeDamageSource.getSource());
             //(this, null) does not cause .player message, (this, owner) doesn't either: for default explosion
             
-            //maybe issue is sourceType.TNT
-            CustomExplosion grenadeExplosion = new CustomExplosion(world, this, grenadeDamageSource, null, prevX, prevY, prevZ, explosionPower, false, World.ExplosionSourceType.NONE, null, null, SoundEvents.ENTITY_GENERIC_EXPLODE);
+            //maybe issue is sourceType.TNT: tried .TNT, .MOB, .NONE, none send .player death message
+            CustomExplosion grenadeExplosion = new CustomExplosion(world, this, grenadeDamageSource, null, prevX, prevY, prevZ, explosionPower, false, World.ExplosionSourceType.TNT, null, null, SoundEvents.ENTITY_GENERIC_EXPLODE);
             grenadeExplosion.explode();
             ExplosivesEnhanced.LOGGER.info("Causing explosion.");
 
@@ -62,4 +62,3 @@ public class GrenadeEntity extends ThrownItemEntity {
         }
     }
 }
-//Now we should test with SourceType.NONE
