@@ -25,6 +25,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -43,6 +44,7 @@ import java.util.*;
 
 
 //the way this class should be used is that a CustomExplosion object is created with the proper arguments, then the explode method is called to cause an explosion
+//particles and sound not working
 public class CustomExplosion extends Explosion {
     private static final ExplosionBehavior DEFAULT_BEHAVIOR = new ExplosionBehavior();
     private final boolean createFire;
@@ -70,6 +72,7 @@ public class CustomExplosion extends Explosion {
         Explosion.DestructionType defaultDestructionType = world.getGameRules().getBoolean(GameRules.BLOCK_EXPLOSION_DROP_DECAY) ? DestructionType.DESTROY_WITH_DECAY : DestructionType.DESTROY;
         SimpleParticleType defaultParticle = ParticleTypes.EXPLOSION;
         SimpleParticleType defaultEmitterParticle = ParticleTypes.EXPLOSION_EMITTER;
+        RegistryEntry<SoundEvent> defaultSoundEvent = SoundEvents.ENTITY_GENERIC_EXPLODE;
 
         this.random = Random.create();
         this.affectedBlocks = new ObjectArrayList<BlockPos>();
@@ -87,11 +90,11 @@ public class CustomExplosion extends Explosion {
         this.particle = particle == null ? defaultParticle : particle;
         this.emitterParticle = emitterParticle == null ? defaultEmitterParticle : emitterParticle;
         this.doParticles = this.particle != null && this.emitterParticle != null;
-        this.soundEvent = soundEvent;
+        this.soundEvent = soundEvent == null ? defaultSoundEvent : soundEvent;
     }
 
     private void sendPacket() {
-        if (!world.isClient && world instanceof ServerWorld serverWorld) {
+        if (!world.isClient && world instanceof ServerWorld serverWorld && entity != null) {
             serverWorld.getChunkManager().sendToNearbyPlayers(
                     entity,
                     new ExplosionS2CPacket(
@@ -303,6 +306,17 @@ public class CustomExplosion extends Explosion {
 
             this.world.getProfiler().pop();
         }
+    }
+
+    @Override
+    public void collectBlocksAndDamageEntities() {
+        filterBlocks(null, null);
+        damageEntities();
+    }
+
+    @Override
+    public void affectWorld(boolean particles) {
+        affectWorld(); // Use your existing method
     }
 
     //necessary private methods copied from Explosion class

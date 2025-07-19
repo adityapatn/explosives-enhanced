@@ -6,14 +6,11 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -21,12 +18,14 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.World.ExplosionSourceType;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import org.jetbrains.annotations.Nullable;
+
+import pancake.explosives.CustomExplosion;
 import pancake.explosives.ExplosivesEnhanced;
 import pancake.explosives.registry.ModDamageTypes;
 
@@ -63,12 +62,15 @@ public class LandscaperBlock extends Block {
             world.emitGameEvent(igniter, GameEvent.PRIME_FUSE, pos); //game event for listeners like sculk sensors
             world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
-            world.createExplosion(igniter, Explosion.createDamageSource(world, igniter), new ExplosionBehavior(), pos.getX(), pos.getY(), pos.getZ(), 4.0F, false, World.ExplosionSourceType.TNT);
+            //world.createExplosion(igniter, Explosion.createDamageSource(world, igniter), new ExplosionBehavior(), pos.getX(), pos.getY(), pos.getZ(), 4.0F, false, World.ExplosionSourceType.TNT);
             ExplosivesEnhanced.LOGGER.info("Landscaper exploded!");
-
-            //code for registering the damage type
-
+            
+            DamageSource landscaperDamageSource = ModDamageTypes.createDynamiteEntityDamage(world, igniter, igniter);
+            CustomExplosion explosion = new CustomExplosion(world, igniter, landscaperDamageSource, new ExplosionBehavior(), pos.getX(), pos.getY(), pos.getZ(), 4.0F, false, ExplosionSourceType.TNT, null, null, null);
+            explosion.explode();
+            
             //Since owner is excluded from explosion damage calculation, manually apply damage to owner
+            /* 
             float power = 4.0F;
             if (igniter instanceof LivingEntity livingOwner) {
                 ExplosivesEnhanced.LOGGER.info("Damaging owner!");
@@ -85,11 +87,12 @@ public class LandscaperBlock extends Block {
                         double impact = (1.0 - normDist) * exposure;
                         float damage = (float) ((impact * impact + impact) * 3.5 * power);
 
-                        DamageSource landscaperDamageSource = ModDamageTypes.createDynamiteEntityDamage(world, igniter, igniter);
+                        
                         livingOwner.damage(landscaperDamageSource, damage); //damage source must not be explosion to affect owner
                     }
                 }
             }
+            */
         }
     }
 

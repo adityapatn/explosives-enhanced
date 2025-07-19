@@ -7,7 +7,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 import pancake.explosives.CustomExplosion;
@@ -54,7 +53,7 @@ public class GrenadeEntity extends ThrownItemEntity {
             //(this, null) does not cause .player message, (this, owner) doesn't either: for default explosion
             
             //maybe issue is sourceType.TNT: tried .TNT, .MOB, .NONE, none send .player death message
-            CustomExplosion grenadeExplosion = new CustomExplosion(world, this, grenadeDamageSource, null, prevX, prevY, prevZ, explosionPower, false, World.ExplosionSourceType.TNT, null, null, SoundEvents.ENTITY_GENERIC_EXPLODE);
+            CustomExplosion grenadeExplosion = new CustomExplosion(world, this, grenadeDamageSource, null, prevX, prevY, prevZ, explosionPower, false, World.ExplosionSourceType.TNT, null, null, null);
             grenadeExplosion.explode();
             ExplosivesEnhanced.LOGGER.info("Causing explosion.");
 

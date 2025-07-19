@@ -7,14 +7,11 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -23,12 +20,14 @@ import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.World.ExplosionSourceType;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import org.jetbrains.annotations.Nullable;
+
+import pancake.explosives.CustomExplosion;
 import pancake.explosives.ExplosivesEnhanced;
-import net.minecraft.util.math.Vec3d;
 import pancake.explosives.registry.ModDamageTypes;
 
 public class DynamiteBlock extends Block {
@@ -57,22 +56,21 @@ public class DynamiteBlock extends Block {
             explode(world, pos, explosion.getCausingEntity());
     }
 
-
-
     public void explode(World world, BlockPos pos, @Nullable LivingEntity igniter) {
         if (!world.isClient()) {
             world.emitGameEvent(igniter, GameEvent.PRIME_FUSE, pos); //game event for listeners like sculk sensors
             world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
-            ExplosivesEnhanced.LOGGER.info("Igniter: " + igniter);
-            ExplosivesEnhanced.LOGGER.info("Is igniter living: " + (igniter instanceof LivingEntity));
-            //non-null attacker AND ENTITY SOURCE triggers .player death message – block source is environmental (must summon DynamiteEntity to cause explosion)
+            //ExplosivesEnhanced.LOGGER.info("Igniter: " + igniter);
+            //ExplosivesEnhanced.LOGGER.info("Is igniter living: " + (igniter instanceof LivingEntity));
+            //non-null attacker AND ENTITY SOURCE triggers .player death message – block source is environmental (must summon DynamiteEntity to cause explosion) - confirmed this is not issue with GrenadeEntity
+            
             DamageSource dynamiteDamageSource = ModDamageTypes.createDynamiteEntityDamage(world, igniter, igniter);
-
             //Dynamite explodes
-            world.createExplosion(igniter, dynamiteDamageSource, new ExplosionBehavior(), pos.getX(), pos.getY(), pos.getZ(), 4.0F, false, World.ExplosionSourceType.TNT);
+            //world.createExplosion(igniter, dynamiteDamageSource, new ExplosionBehavior(), pos.getX(), pos.getY(), pos.getZ(), 4.0F, false, World.ExplosionSourceType.TNT);
+            CustomExplosion explosion = new CustomExplosion(world, igniter, dynamiteDamageSource, new ExplosionBehavior(), pos.getX(), pos.getY(), pos.getZ(), 4.0F, false, ExplosionSourceType.TNT, null, null, null);
+            explosion.explode();
             ExplosivesEnhanced.LOGGER.info("Dynamite exploded!");
-
         }
     }
 
