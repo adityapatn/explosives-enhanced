@@ -111,14 +111,22 @@ public class CustomExplosion extends Explosion {
     }
 
     public Explosion explode() {
-        filterBlocks();
+        filterBlocks(null, null);
         damageEntities();
         affectWorld();
         sendPacket();
         return this;
     }
 
-    private void filterBlocks() {
+    public Explosion explode(Integer yCutoff, Boolean above) {
+        filterBlocks(yCutoff, above);
+        damageEntities();
+        affectWorld();
+        sendPacket();
+        return this;
+    }
+
+    private void filterBlocks(@Nullable Integer yCutoff, @Nullable Boolean above) {
         this.world.emitGameEvent(this.entity, GameEvent.EXPLODE, new Vec3d(this.x, this.y, this.z));
         Set<BlockPos> set = Sets.newHashSet();
         
@@ -151,7 +159,21 @@ public class CustomExplosion extends Explosion {
                             }
 
                             if (rayPower > 0.0F && this.behavior.canDestroyBlock(this, this.world, blockPos, blockState, rayPower)) {
-                                set.add(blockPos); //all explodable blocks are added to the set, which are added to affectedBlocks
+                                if (yCutoff != null && above != null) {  //we want to check the block y-level
+                                    if (above) { //check whether its above the Y cutoff
+                                        if (blockPos.getY() > yCutoff) {
+                                            set.add(blockPos);
+                                        }
+                                    } else { //check whether its below the Y cutoff
+                                        if (blockPos.getY() < yCutoff) {
+                                            set.add(blockPos);
+                                        }
+                                    }
+                                }
+                                else { //no check for Y level
+                                    set.add(blockPos);
+                                }
+                                 //all explodable blocks are added to the set, which are added to affectedBlocks
                             }
 
                             rayPosX += rayDirX * 0.3;
