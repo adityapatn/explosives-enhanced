@@ -13,6 +13,7 @@ import net.minecraft.world.explosion.ExplosionBehavior;
 import org.jetbrains.annotations.Nullable;
 
 import pancake.explosives.CustomExplosion;
+import pancake.explosives.ExplosivesEnhanced;
 import pancake.explosives.registry.ModDamageTypes;
 
 public class LandscaperBlock extends DynamiteBlock {
@@ -33,8 +34,9 @@ public class LandscaperBlock extends DynamiteBlock {
             //Landscaper explodes
             //world.createExplosion(igniter, landscaperDamageSource, new ExplosionBehavior(), pos.getX(), pos.getY(), pos.getZ(), 4.0F, false, World.ExplosionSourceType.TNT);
             CustomExplosion explosion = new CustomExplosion(world, igniter, landscaperDamageSource, new ExplosionBehavior(), pos.getX(), pos.getY(), pos.getZ(), 4.0F, false, ExplosionSourceType.TNT, null, null, null);
-            explosion.explode(pos.getY() - 1, true);
-            //ExplosivesEnhanced.LOGGER.info("Landscaper exploded!");
+            //tested above true, works, 
+            explosion.explode(pos.getY(), false);
+            ExplosivesEnhanced.LOGGER.info("Landscaper exploded!");
         }
     }
 }

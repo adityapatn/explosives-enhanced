@@ -68,7 +68,7 @@ public class DynamiteBlock extends Block {
             //world.createExplosion(igniter, dynamiteDamageSource, new ExplosionBehavior(), pos.getX(), pos.getY(), pos.getZ(), 4.0F, false, World.ExplosionSourceType.TNT);
             CustomExplosion explosion = new CustomExplosion(world, igniter, dynamiteDamageSource, new ExplosionBehavior(), pos.getX(), pos.getY(), pos.getZ(), 4.0F, false, ExplosionSourceType.TNT, null, null, null);
             explosion.explode();
-            //ExplosivesEnhanced.LOGGER.info("Dynamite exploded!");
+            ExplosivesEnhanced.LOGGER.info("Dynamite exploded!");
         }
     }
 
@@ -95,7 +95,6 @@ public class DynamiteBlock extends Block {
             BlockPos blockPos = hit.getBlockPos();
             Entity entity = projectile.getOwner();
             if (projectile.isOnFire() && projectile.canModifyAt(world, blockPos)) {
-                ExplosivesEnhanced.LOGGER.info("Dynamite exploded by projectile hit");
                 explode(world, blockPos, entity instanceof LivingEntity ? (LivingEntity)entity : null);
                 world.removeBlock(blockPos, false);
             }

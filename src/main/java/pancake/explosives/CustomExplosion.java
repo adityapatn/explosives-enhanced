@@ -166,11 +166,11 @@ public class CustomExplosion extends Explosion {
                             if (rayPower > 0.0F && this.behavior.canDestroyBlock(this, this.world, blockPos, blockState, rayPower)) {
                                 if (yCutoff != null && above != null) {  //we want to check the block y-level
                                     if (above) { //check whether its above the Y cutoff
-                                        if (blockPos.getY() > yCutoff) {
+                                        if (blockPos.getY() >= yCutoff) {
                                             set.add(blockPos);
                                         }
                                     } else { //check whether its below the Y cutoff
-                                        if (blockPos.getY() < yCutoff) {
+                                        if (blockPos.getY() <= yCutoff) {
                                             set.add(blockPos);
                                         }
                                     }
