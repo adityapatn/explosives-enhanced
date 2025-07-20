@@ -44,18 +44,17 @@ public class GrenadeEntity extends ThrownItemEntity {
         if (!world.isClient()) {
             float explosionPower = 2.0F;
             Entity owner = this.getOwner();
-            ExplosivesEnhanced.LOGGER.info("Owner: " + owner);
-            ExplosivesEnhanced.LOGGER.info("Is owner a player: " + (owner instanceof PlayerEntity));
 
             DamageSource grenadeDamageSource = ModDamageTypes.createGrenadeEntityDamage(world, this, owner);
-            ExplosivesEnhanced.LOGGER.info("DamageSource attacker: " + grenadeDamageSource.getAttacker());
-            ExplosivesEnhanced.LOGGER.info("DamageSource source: " + grenadeDamageSource.getSource());
+            
             //(this, null) does not cause .player message, (this, owner) doesn't either: for default explosion
             
             //maybe issue is sourceType.TNT: tried .TNT, .MOB, .NONE, none send .player death message
             CustomExplosion grenadeExplosion = new CustomExplosion(world, this, grenadeDamageSource, null, prevX, prevY, prevZ, explosionPower, false, World.ExplosionSourceType.TNT, null, null, null);
             grenadeExplosion.explode();
-            ExplosivesEnhanced.LOGGER.info("Causing explosion.");
+            ExplosivesEnhanced.LOGGER.info("Grenade exploded with owner " + owner + "(Is PlayerEntity: " + (owner instanceof PlayerEntity) + ")");
+            ExplosivesEnhanced.LOGGER.info("grenadeDamageSource attacker: " + grenadeDamageSource.getAttacker());
+            ExplosivesEnhanced.LOGGER.info("grenadeDamageSource source: " + grenadeDamageSource.getSource());
 
             this.discard();
         }

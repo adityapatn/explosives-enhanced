@@ -53,7 +53,7 @@ public class DynamiteBlock extends Block {
     }
 
     public void onDestroyedByExplosion(World world, BlockPos pos, Explosion explosion) {
-            explode(world, pos, explosion.getCausingEntity());
+        explode(world, pos, explosion.getCausingEntity());
     }
 
     public void explode(World world, BlockPos pos, @Nullable LivingEntity igniter) {
@@ -61,8 +61,6 @@ public class DynamiteBlock extends Block {
             world.emitGameEvent(igniter, GameEvent.PRIME_FUSE, pos); //game event for listeners like sculk sensors
             world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
-            //ExplosivesEnhanced.LOGGER.info("Igniter: " + igniter);
-            //ExplosivesEnhanced.LOGGER.info("Is igniter living: " + (igniter instanceof LivingEntity));
             //non-null attacker AND ENTITY SOURCE triggers .player death message – block source is environmental (must summon DynamiteEntity to cause explosion) - confirmed this is not issue with GrenadeEntity
             
             DamageSource dynamiteDamageSource = ModDamageTypes.createDynamiteEntityDamage(world, igniter, igniter);
@@ -70,7 +68,7 @@ public class DynamiteBlock extends Block {
             //world.createExplosion(igniter, dynamiteDamageSource, new ExplosionBehavior(), pos.getX(), pos.getY(), pos.getZ(), 4.0F, false, World.ExplosionSourceType.TNT);
             CustomExplosion explosion = new CustomExplosion(world, igniter, dynamiteDamageSource, new ExplosionBehavior(), pos.getX(), pos.getY(), pos.getZ(), 4.0F, false, ExplosionSourceType.TNT, null, null, null);
             explosion.explode();
-            ExplosivesEnhanced.LOGGER.info("Dynamite exploded!");
+            //ExplosivesEnhanced.LOGGER.info("Dynamite exploded!");
         }
     }
 
@@ -97,6 +95,7 @@ public class DynamiteBlock extends Block {
             BlockPos blockPos = hit.getBlockPos();
             Entity entity = projectile.getOwner();
             if (projectile.isOnFire() && projectile.canModifyAt(world, blockPos)) {
+                ExplosivesEnhanced.LOGGER.info("Dynamite exploded by projectile hit");
                 explode(world, blockPos, entity instanceof LivingEntity ? (LivingEntity)entity : null);
                 world.removeBlock(blockPos, false);
             }
