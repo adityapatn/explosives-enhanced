@@ -1,5 +1,6 @@
 package pancake.explosives.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -31,7 +32,7 @@ import pancake.explosives.registry.ModDamageTypes;
 
 public class LandscaperBlock extends Block {
 
-    public LandscaperBlock(Settings settings) {
+    public LandscaperBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 
@@ -52,9 +53,7 @@ public class LandscaperBlock extends Block {
     }
 
     public void onDestroyedByExplosion(World world, BlockPos pos, Explosion explosion) {
-        if (!world.isClient) {
-            explode(world, pos, null);
-        }
+        explode(world, pos, explosion.getCausingEntity());
     }
 
     public void explode(World world, BlockPos pos, @Nullable LivingEntity igniter) {
@@ -62,37 +61,14 @@ public class LandscaperBlock extends Block {
             world.emitGameEvent(igniter, GameEvent.PRIME_FUSE, pos); //game event for listeners like sculk sensors
             world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
-            //world.createExplosion(igniter, Explosion.createDamageSource(world, igniter), new ExplosionBehavior(), pos.getX(), pos.getY(), pos.getZ(), 4.0F, false, World.ExplosionSourceType.TNT);
-            ExplosivesEnhanced.LOGGER.info("Landscaper exploded!");
+            //non-null attacker AND ENTITY SOURCE triggers .player death message – block source is environmental (must summon LandscaperEntity to cause explosion) - confirmed this is not issue with GrenadeEntity
             
-            DamageSource landscaperDamageSource = ModDamageTypes.createDynamiteEntityDamage(world, igniter, igniter);
+            DamageSource landscaperDamageSource = ModDamageTypes.createLandscaperEntityDamage(world, igniter, igniter);
+            //Landscaper explodes
+            //world.createExplosion(igniter, landscaperDamageSource, new ExplosionBehavior(), pos.getX(), pos.getY(), pos.getZ(), 4.0F, false, World.ExplosionSourceType.TNT);
             CustomExplosion explosion = new CustomExplosion(world, igniter, landscaperDamageSource, new ExplosionBehavior(), pos.getX(), pos.getY(), pos.getZ(), 4.0F, false, ExplosionSourceType.TNT, null, null, null);
-            explosion.explode();
-            
-            //Since owner is excluded from explosion damage calculation, manually apply damage to owner
-            /* 
-            float power = 4.0F;
-            if (igniter instanceof LivingEntity livingOwner) {
-                ExplosivesEnhanced.LOGGER.info("Damaging owner!");
-                double dx = livingOwner.getX() - pos.getX();
-                double dy = livingOwner.getEyeY() - pos.getY();
-                double dz = livingOwner.getZ() - pos.getZ();
-                double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-
-                float radius = power * 2.0f;
-                if (distance <= radius) {
-                    float exposure = Explosion.getExposure(Vec3d.ofCenter(pos), livingOwner);
-                    if (exposure > 0) {
-                        double normDist = distance / radius;
-                        double impact = (1.0 - normDist) * exposure;
-                        float damage = (float) ((impact * impact + impact) * 3.5 * power);
-
-                        
-                        livingOwner.damage(landscaperDamageSource, damage); //damage source must not be explosion to affect owner
-                    }
-                }
-            }
-            */
+            explosion.explode(pos.getY() - 1, true);
+            //ExplosivesEnhanced.LOGGER.info("Landscaper exploded!");
         }
     }
 
@@ -119,6 +95,7 @@ public class LandscaperBlock extends Block {
             BlockPos blockPos = hit.getBlockPos();
             Entity entity = projectile.getOwner();
             if (projectile.isOnFire() && projectile.canModifyAt(world, blockPos)) {
+                ExplosivesEnhanced.LOGGER.info("Landscaper exploded by projectile hit");
                 explode(world, blockPos, entity instanceof LivingEntity ? (LivingEntity)entity : null);
                 world.removeBlock(blockPos, false);
             }
