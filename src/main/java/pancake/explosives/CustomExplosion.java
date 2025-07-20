@@ -22,6 +22,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -89,27 +90,28 @@ public class CustomExplosion extends Explosion {
         this.behavior = behavior == null ? this.chooseBehavior(entity) : behavior;
         this.particle = particle == null ? defaultParticle : particle;
         this.emitterParticle = emitterParticle == null ? defaultEmitterParticle : emitterParticle;
-        this.doParticles = this.particle != null && this.emitterParticle != null;
+        this.doParticles = true;
         this.soundEvent = soundEvent == null ? defaultSoundEvent : soundEvent;
     }
 
     private void sendPacket() {
-        if (!world.isClient && world instanceof ServerWorld serverWorld && entity != null) {
-            serverWorld.getChunkManager().sendToNearbyPlayers(
-                    entity,
-                    new ExplosionS2CPacket(
-                            x,
-                            y,
-                            z,
-                            power,
-                            affectedBlocks,   // your affectedBlocks list
-                            Vec3d.ZERO,
-                            destructionType,
-                            particle,
-                            emitterParticle,
-                            soundEvent
-                    )
+        if (!world.isClient && world instanceof ServerWorld serverWorld) {
+            ExplosionS2CPacket packet = new ExplosionS2CPacket(
+                x, y, z, power,
+                affectedBlocks,
+                Vec3d.ZERO,
+                destructionType,
+                particle,
+                emitterParticle,
+                soundEvent
             );
+        
+            // Send to all players within range
+            for (ServerPlayerEntity player : serverWorld.getPlayers()) {
+                if (player.squaredDistanceTo(x, y, z) < 4096.0) { // 64 block radius
+                    player.networkHandler.sendPacket(packet);
+                }
+            }
         }
     }
 
@@ -264,7 +266,7 @@ public class CustomExplosion extends Explosion {
 
     //not an @Override because the superclass method has a boolean parameter, I just used this.doParticles
     public void affectWorld() {
-        if (this.world.isClient) {
+        if (!this.world.isClient) {
             this.world.playSound(this.x, this.y, this.z, (SoundEvent)this.soundEvent.value(), SoundCategory.BLOCKS, 4.0F, (1.0F + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.2F) * 0.7F, false);
         }
 
