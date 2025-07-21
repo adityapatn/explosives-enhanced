@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "explosives-enhanced:block/landscaper_bottom",
+    "side": "explosives-enhanced:block/landscaper_side_up",
+    "top": "explosives-enhanced:block/landscaper_top"
+  }
+}

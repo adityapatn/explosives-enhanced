@@ -34,8 +34,8 @@ public class LandscaperBlock extends DynamiteBlock {
             //Landscaper explodes
             //world.createExplosion(igniter, landscaperDamageSource, new ExplosionBehavior(), pos.getX(), pos.getY(), pos.getZ(), 4.0F, false, World.ExplosionSourceType.TNT);
             CustomExplosion explosion = new CustomExplosion(world, igniter, landscaperDamageSource, new ExplosionBehavior(), pos.getX(), pos.getY(), pos.getZ(), 4.0F, false, ExplosionSourceType.TNT, null, null, null);
-            //tested above true, works, 
-            explosion.explode(pos.getY(), false);
+            //above both true and false work as expected
+            explosion.explode(pos.getY(), true);
             ExplosivesEnhanced.LOGGER.info("Landscaper exploded!");
         }
     }

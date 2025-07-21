@@ -10,6 +10,12 @@ import pancake.explosives.item.ModItemGroups;
 import pancake.explosives.item.ModItems;
 import pancake.explosives.registry.ModDamageTypes;
 
+/* TODO
+ * Add Landscaper textures
+ * Create Landscaper up and down textures
+ * Add Landscaper BlockState behavior
+ */
+
 public class ExplosivesEnhanced implements ModInitializer {
 	public static final String MOD_ID = "explosives-enhanced";
 

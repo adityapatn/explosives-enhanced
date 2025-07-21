@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": {
+      "item": "minecraft:sand"
+    },
+    "G": {
+      "item": "minecraft:gunpowder"
+    }
+  },
+  "pattern": [
+    "GSG",
+    "SGS",
+    "SSS"
+  ],
+  "result": {
+    "count": 1,
+    "id": "explosives-enhanced:landscaper_block"
+  }
+}
